@@ -1,0 +1,27 @@
+services:
+  devcontainer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # .. means the parent folder of the folder where compose.yml is in
+    # workspaces is the default workdir for devcontainers
+    volumes:
+      - ..:/workspaces:cached
+    networks:
+      - devcontainer
+    # Watch complements the bind mount to keep dependencies syncronized
+    develop:
+      watch:
+        - action: sync
+          path: ..
+          target: /workspaces
+          ignore:
+            - .venv/
+        - action: rebuild
+          path: ./uv.lock
+    command: sleep infinity
+
+# I rather use a custom network than the docker default network
+networks:
+  devcontainer:
+    driver: bridge

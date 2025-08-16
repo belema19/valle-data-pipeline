@@ -1,0 +1,6 @@
+{
+    "name": "Python",
+    "dockerComposeFile": "../compose.yml",
+    "service": "devcontainer",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
+}
