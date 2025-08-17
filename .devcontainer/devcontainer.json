@@ -1,6 +1,9 @@
 {
     "name": "Python",
     "dockerComposeFile": "../compose.yml",
+    "mounts": [
+        "source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind"
+    ],
     "service": "devcontainer",
     "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }

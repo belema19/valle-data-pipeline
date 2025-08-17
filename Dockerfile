@@ -6,6 +6,9 @@ RUN apt-get update && apt-get install -y git \
     && git config --global user.name 'belema' \
     && git config --global user.email 'belemacol19@gmail.com' 
 
+# Install gcc for using make
+RUN apt-get update && apt-get install -y build-essential
+
 # Enable bytecode compilation
 ENV UV_COMPILE_BYTECODE=1
 
