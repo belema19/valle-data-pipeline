@@ -1,21 +1,28 @@
+import os
 import pyarrow as pa
 
+def check_dir_exists(dir: str):
+    if os.path.exists(dir):
+        return True
+    os.makedirs(dir)
 
 class S3:
     Bucket = "talento-tech-project"
     Exports = {
         "raw": "exports/raw/",
-        "clean": "exports/clean",
-        "transformed": "exports/transformed",
+        "clean": "exports/clean/",
+        "transformed": "exports/transformed/",
     }
     Local_Commerce = {
         "raw": "local-commerce/raw/",
         "clean": "local-commerce/clean/",
-        "transformed": "local-commerce/transformed",
+        "transformed": "local-commerce/transformed/",
     }
 
 
 class Local_Dir:
+    Data = './data'
+
     Exports = {
         "raw": f"./data/{S3.Exports['raw']}",
         "clean": f"./data/{S3.Exports['clean']}",
@@ -56,3 +63,8 @@ class Exports:
         ("SEGURO", pa.string()),
         ("OTROSG", pa.string()),
     ]
+
+class Filename:
+    Parquet = {
+        "exports": {"clean": "clean_exports.parquet"}
+    }
