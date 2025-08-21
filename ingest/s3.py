@@ -11,8 +11,8 @@ def get_s3_resource():
     s3 = boto3.resource("s3")
     return s3
 
-def get_s3_client():
 
+def get_s3_client():
     s3 = boto3.client("s3")
     return s3
 
@@ -21,21 +21,15 @@ def get_objects(bucket: str, prefix: str, marker: str):
     """shows all objects within RAW_DATA_BUCKET"""
     s3 = get_s3_resource()
     bucket = s3.Bucket(config.S3.Bucket)
-    return bucket.objects.filter(
-        Prefix=prefix,
-        Marker=marker
-    ).all()
+    return bucket.objects.filter(Prefix=prefix, Marker=marker).all()
+
 
 def download_raw_data(bucket: str, prefix: str, marker: str):
     """downloads all objects from RAW_DATA_BUCKET"""
 
-
-    config.check_dir_exists(
-        f"{config.Local_Dir.Data}/{marker}"
-    )
+    config.check_dir_exists(f"{config.Local_Dir.Data}/{marker}")
 
     if not os.listdir(f"{config.Local_Dir.Data}/{marker}"):
-
         s3 = get_s3_client()
         response = get_objects(bucket, prefix, marker)
 
@@ -43,14 +37,11 @@ def download_raw_data(bucket: str, prefix: str, marker: str):
             print(obj.key)
 
         for obj in response:
-            s3.download_file(
-                bucket,
-                f"{obj.key}",
-                f"{config.Local_Dir.Data}/{obj.key}"
-            )
+            s3.download_file(bucket, f"{obj.key}", f"{config.Local_Dir.Data}/{obj.key}")
 
         return True
     return False
+
 
 def upload_file(file_name, bucket, object_name=None):
     """Upload a file to an S3 bucket

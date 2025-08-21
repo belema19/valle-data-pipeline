@@ -1,10 +1,14 @@
 import os
 import pyarrow as pa
 
+
 def check_dir_exists(dir: str):
     if os.path.exists(dir):
-        return True
-    os.makedirs(dir)
+        print(f"directory '{dir}' already exists.\n")
+    else:
+        os.makedirs(dir)
+        print(f"directory '{dir}' created.\n")
+
 
 class S3:
     Bucket = "talento-tech-project"
@@ -21,7 +25,7 @@ class S3:
 
 
 class Local_Dir:
-    Data = './data'
+    Data = "./data"
 
     Exports = {
         "raw": f"./data/{S3.Exports['raw']}",
@@ -64,7 +68,6 @@ class Exports:
         ("OTROSG", pa.string()),
     ]
 
+
 class Filename:
-    Parquet = {
-        "exports": {"clean": "clean_exports.parquet"}
-    }
+    Parquet = {"exports": {"clean": "clean_exports.parquet"}}

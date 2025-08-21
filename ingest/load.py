@@ -6,74 +6,59 @@ import pyarrow.compute as pc
 import duckdb
 
 
-def unify_csv(target: str):
-    data = duckdb.read_csv(target + "*.csv")
+def unify_csv(source_dir: str) -> duckdb.DuckDBPyRelation:
+    data = duckdb.read_csv(source_dir + "*.csv")
     return data
 
 
-def clean_exports(data: duckdb.DuckDBPyRelation):
+class Load:
+    def __init__(self, data: duckdb.DuckDBPyRelation):
+        self.data = data
 
-    config.check_dir_exists(config.Local_Dir.Exports["clean"])
+    def __str__(self):
+        return f"{type(self.data)}"
 
-    if not os.listdir(config.Local_Dir.Exports["clean"]):
+    def get_pyarrow_table(self) -> pa.Table:
+        self.data = self.data.arrow()
+        return self
 
-        print("Working on exports data...\n")
-        exports_table = data.arrow()
-        print(exports_table)
+    def show_info(self):
+        if isinstance(self.data, pd.DataFrame):
+            print(self.data.info())
+            print(self.data.shape)
+        else:
+            print(self.data)
+            print(self.data.shape)
 
-        print("Droping unwanted columns...\n")
-        exports_table = exports_table.drop_columns(config.Exports.Columns_To_Drop)
+    def purge_columns(self, columns: list) -> pa.Table:
+        self.data = self.data.drop_columns(columns)
+        return self
 
-        # Check shape
-        print("Table shape:\n")
-        print(exports_table.shape)
+    def cast_dtypes(self, dtypes: dict) -> pa.Table:
+        schema = pa.schema(dtypes)
+        self.data = self.data.cast(target_schema=schema)
+        return self
 
-        # Handle null values
-        print("Checking for null values...\n")
-        for column in exports_table.column_names:
-            print(f"for column {column}")
-            print(pc.count(column, mode="only_null"), "\n")
-        print("Droping any null values...\n")
-        exports_table.drop_null()
+    def purge_nulls(self) -> pa.Table:
+        self.data = self.data.drop_null()
+        return self
 
-        # Cast dtypes
-        print("Optimizing dtypes...\n")
-        exports_schema = pa.schema(config.Exports.Dtypes)
-        exports_table = exports_table.cast(exports_schema)
-        print("New table schema:\n")
-        print(exports_table)
+# TODO
+# Use pyarrow to get rid of duplicates
 
-        # Use pandas integration to remove duplicate rows if any
-        # I would rather not to change back and forth between pandas df and pyarrow table
-        # But i didn't find a better option
-        # I guess this is because arrow treats tables as columnar data
-        # and pandas as row data, which allows it to identify duplicated rows
-        print("Migrating to dataframe...\n")
-        exports_table = exports_table.to_pandas(types_mapper=pd.ArrowDtype)
-        print("\nDataframe dtypes:")
-        print(exports_table.dtypes)
-        print("\nDataframe shape:")
-        print(exports_table.shape)
+    def table_to_dataframe(self) -> pd.DataFrame:
+        self.data =  self.data.to_pandas(types_mapper=pd.ArrowDtype)
+        return self
 
-        exports_table = exports_table.drop_duplicates()
-        print("Dataframe shape after duplicated rows removal:\n")
-        print(exports_table.shape)
-        print(exports_table.info())
+    def purge_duplicates(self) -> pd.DataFrame:
+        self.data = self.data.drop_duplicates()
+        return self
 
-        return exports_table
-    return pd.Dataframe()
+    def save_to_parquet(self, dir: str, filename: str):
+        if self.data.empty:
+            raise ValueError("Dataframe for exporting to parquet is empty")
 
-
-def load_exports(data: pd.DataFrame):
-    if data.empty:
-        return False
-
-    data.to_parquet(
-        config.Local_Dir.Exports["clean"] + config.Filename.Parquet["exports"]["clean"],
-        engine="pyarrow",
-        index=False
-    )
-    return True
+        self.data.to_parquet(dir + filename, engine="pyarrow", index=False)
 
 
 if __name__ == "__main__":
