@@ -7,7 +7,8 @@ import duckdb
 
 
 def unify_csv(source_dir: str) -> duckdb.DuckDBPyRelation:
-    data = duckdb.read_csv(source_dir + "*.csv")
+
+    data = duckdb.read_csv(source_dir + "*.csv", ignore_errors=True)
     return data
 
 
@@ -27,14 +28,16 @@ class Load:
             print(self.data.info())
             print(self.data.shape)
         else:
-            print(self.data)
+            for column in self.data.column_names:
+                print(column, ": ", sep="", end="")
+                print(self.data.column(column).type)
             print(self.data.shape)
 
     def purge_columns(self, columns: list) -> pa.Table:
         self.data = self.data.drop_columns(columns)
         return self
 
-    def cast_dtypes(self, dtypes: dict) -> pa.Table:
+    def cast_dtypes(self, dtypes: list[tuple]) -> pa.Table:
         schema = pa.schema(dtypes)
         self.data = self.data.cast(target_schema=schema)
         return self
@@ -43,9 +46,7 @@ class Load:
         self.data = self.data.drop_null()
         return self
 
-# TODO
-# Use pyarrow to get rid of duplicates
-
+# Here I use dataframes because I need a row approach, instead of a columnar one
     def table_to_dataframe(self) -> pd.DataFrame:
         self.data =  self.data.to_pandas(types_mapper=pd.ArrowDtype)
         return self
@@ -56,9 +57,20 @@ class Load:
 
     def save_to_parquet(self, dir: str, filename: str):
         if self.data.empty:
-            raise ValueError("Dataframe for exporting to parquet is empty")
+            raise ValueError("Dataframe for exporting to parquet cannot be empty")
 
-        self.data.to_parquet(dir + filename, engine="pyarrow", index=False)
+        config.check_dir_exists(dir)
+
+        if not os.listdir(dir):
+            print("Saving to parquet...\n")
+            self.data.to_parquet(dir + filename, engine="pyarrow", index=False)
+            print("Data saved succesfully!\n")
+        else:
+            print(
+                f"There's data in {dir}.\n"
+                "This process doesn't allows overwriting.\n"
+                "Data was not saved!\n"
+            )
 
 
 if __name__ == "__main__":

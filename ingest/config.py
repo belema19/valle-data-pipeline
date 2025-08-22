@@ -15,24 +15,53 @@ class S3:
     Exports = {
         "raw": "exports/raw/",
         "clean": "exports/clean/",
-        "transformed": "exports/transformed/",
+        "transformed": "exports/transformed/"
     }
     Local_Commerce = {
         "raw": "local-commerce/raw/",
         "clean": "local-commerce/clean/",
-        "transformed": "local-commerce/transformed/",
+        "transformed": "local-commerce/transformed/"
+    }
+    Korea_Imports = {
+        "raw": "korea-imports/raw/",
+        "clean": "korea-imports/clean/",
+        "transformed": "korea-imports/transformed/"
     }
 
 
 class Local_Dir:
-    Data = "./data"
+    Data = "./data/"
 
     Exports = {
-        "raw": f"./data/{S3.Exports['raw']}",
-        "clean": f"./data/{S3.Exports['clean']}",
-        "transformed": f"./data/{S3.Exports['transformed']}",
+        "raw": Data + S3.Exports['raw'],
+        "clean": Data + S3.Exports['clean'],
+        "transformed": Data + S3.Exports['transformed']
     }
 
+    Local_Commerce = {
+        "raw": Data + S3.Local_Commerce["raw"],
+        "clean": Data + S3.Local_Commerce["clean"],
+        "transformed": Data + S3.Local_Commerce["transformed"]
+    }
+
+    Korea_Imports = {
+        "raw": Data + S3.Korea_Imports["raw"],
+        "clean": Data + S3.Korea_Imports["clean"],
+        "transformed": Data + S3.Korea_Imports["transformed"]
+    }
+
+class Filename:
+    Exports = {
+        "clean": "clean_exports.parquet"
+    }
+
+    Local_Commerce = {
+        "clean": "clean_localcommerce.parquet"
+    }
+
+    Korea_Imports = {
+        "clean": "clean_koreaimports.parquet"
+    }
 
 class Exports:
     Columns_To_Drop = [
@@ -68,6 +97,68 @@ class Exports:
         ("OTROSG", pa.string()),
     ]
 
+class Local_Commerce:
+    Columns_To_Drop = [
+        "V1",
+        "Personal"
+    ]
 
-class Filename:
-    Parquet = {"exports": {"clean": "clean_exports.parquet"}}
+    Dtypes = [
+        ("DEPTO", pa.uint8()),
+        ("CORRELA_9", pa.string()),
+        ("VENTA", pa.string())
+    ]
+
+class Korea_Imports:
+    Columns_To_Drop = [
+        "typeCode",
+        "freqCode",
+        "refPeriodId",
+        "refYear",
+        "refMonth",
+        "period",
+        "reporterCode",
+        "reporterISO",
+        "reporterDesc",
+        "flowCode",
+        "flowDesc",
+        "partnerCode",
+        "partnerISO",
+        "partner2Code",
+        "partner2ISO",
+        "partner2Desc",
+        "classificationCode",
+        "classificationSearchCode",
+        "isOriginalClassification",
+        "aggrLevel",
+        "isLeaf",
+        "customsCode",
+        "customsDesc",
+        "mosCode",
+        "motCode",
+        "motDesc",
+        "qtyUnitCode",
+        "qtyUnitAbbr",
+        "qty",
+        "altQtyUnitCode",
+        "altQtyUnitAbbr",
+        "altQty",
+        "isAltQtyEstimated",
+        "isQtyEstimated",
+        "netWgt",
+        "isNetWgtEstimated",
+        "grossWgt",
+        "isGrossWgtEstimated",
+        "cifvalue",
+        "fobvalue",
+        "legacyEstimationFlag",
+        "isReported",
+        "isAggregate"
+    ]
+
+    Dtypes = [
+        ("partnerDesc", pa.string()),
+        ("cmdCode", pa.uint16()),
+        ("cmdDesc", pa.string()),
+        ("primaryValue", pa.float64())
+    ]
