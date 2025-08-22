@@ -162,3 +162,33 @@ class Korea_Imports:
         ("cmdDesc", pa.string()),
         ("primaryValue", pa.float64())
     ]
+
+datasets = {
+    "exports": {
+        "s3-raw": S3.Exports["raw"],
+        "local-raw": Local_Dir.Exports["raw"],
+        "s3-clean": S3.Exports["clean"],
+        "local-clean": Local_Dir.Exports["clean"],
+        "filename-clean": Filename.Exports["clean"],
+        "drop-cols": Exports.Columns_To_Drop,
+        "dtypes": Exports.Dtypes
+    },
+    "local-commerce": {
+        "s3-raw": S3.Local_Commerce["raw"],
+        "local-raw": Local_Dir.Local_Commerce["raw"],
+        "s3-clean": S3.Local_Commerce["clean"],
+        "local-clean": Local_Dir.Local_Commerce["clean"],
+        "filename-clean": Filename.Local_Commerce["clean"],
+        "drop-cols": Local_Commerce.Columns_To_Drop,
+        "dtypes": Local_Commerce.Dtypes
+    },
+    "korea-imports": {
+        "s3-raw": S3.Korea_Imports["raw"],
+        "local-raw": Local_Dir.Korea_Imports["raw"],
+        "s3-clean": S3.Korea_Imports["clean"],
+        "local-clean": Local_Dir.Korea_Imports["clean"],
+        "filename-clean": Filename.Korea_Imports["clean"],
+        "drop-cols": Korea_Imports.Columns_To_Drop,
+        "dtypes": Korea_Imports.Dtypes
+    }
+}
