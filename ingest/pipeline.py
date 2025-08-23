@@ -1,6 +1,12 @@
+"""Executable of the ingest phase.
+
+This module coordinates all modules within the ingest phase
+in order to prepare the data for transformation.
+"""
+
 import os
 import config
-from s3 import download_raw_data, get_objects, upload_clean_data
+import s3
 from load import unify_csv, Load
 
 BUCKET = config.S3.Bucket
@@ -11,7 +17,7 @@ def main(arg: str):
     if arg == "clean" or arg == "all":
         try:
             for key in config.datasets.keys():
-                download_raw_data(
+                s3.download_raw_data(
                     bucket=BUCKET,
                     prefix=config.datasets[key]["s3-raw"],
                     start_after=config.datasets[key]["s3-raw"],
@@ -48,11 +54,11 @@ def main(arg: str):
                 local_dir = config.datasets[key]["local-clean"]
                 s3_dir = config.datasets[key]["s3-clean"]
 
-                if not get_objects(
+                if not s3.get_objects(
                     bucket=BUCKET, prefix=s3_dir, start_after=s3_dir
                 ) and os.listdir(local_dir):
                     for filename in os.listdir(local_dir):
-                        upload_clean_data(
+                        s3.upload_clean_data(
                             bucket=BUCKET,
                             filename=local_dir + filename,
                             object_name=f"{s3_dir}{filename}",

@@ -2,17 +2,14 @@
 
 This modules stores functions to make CRUD operations
 on a S3 Bucket. For the S3 API to work, it is needed a
-~/.config/aws directory with credential on the local machine.
+~/.config/aws directory with credentials on the local machine.
 
 Attributes:
-    - get_s3_client: creates a s3 client instance.
-
-    - get_objects: returns a list of objects in the given s3 path.
-
-    - download_raw_data: downloads data from a given raw s3 path
+    get_s3_client: creates a s3 client instance.
+    get_objects: returns a list of objects in the given s3 path.
+    download_raw_data: downloads data from a given raw s3 path
       to a default raw local path.
-
-    - upload_clean_data: uploads data to a given s3 path,
+    upload_clean_data: uploads data to a given s3 path,
       from a given local path.
 """
 

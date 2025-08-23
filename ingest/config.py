@@ -1,3 +1,18 @@
+"""Configuration for the ingest phase.
+
+This module stores relevant configuration values for the operation
+of the modules within the ingest phase.
+
+Attributes:
+    check_dir_exists: checks if a given local directory exists.
+    S3: configuration values for S3 API.
+    Local_Dir: configuration values for project folder.
+    Filename: configuration values for created files.
+    Exports: configuration values for exports data.
+    Local_Commerce: configuration values for local commerce data.
+    Korea_Imports: configuration values for korea imports data.
+    datasets: collection of configuration values."""
+
 import os
 import typing
 import pyarrow as pa

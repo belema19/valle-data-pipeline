@@ -1,3 +1,13 @@
+"""Clean and load phase.
+
+This module is in charge of cleaning and loading the data.
+
+Attributes:
+    unify_csv: creates a duckdb relation from all .csv files in a given directory.
+    Load: class that instantiates a duckdb relation a uses pyarrow tables and pandas
+      dataframes and s3 to clean and load the data.
+"""
+
 import os
 import config
 import pandas as pd
