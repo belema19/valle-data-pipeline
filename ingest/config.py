@@ -1,8 +1,16 @@
 import os
+import typing
 import pyarrow as pa
 
 
 def check_dir_exists(dir: str):
+    """checks if a given directory exists.
+
+    If the directory doesn't exist, it is created.
+
+    Args:
+        dir (str): directory relative path.
+    """
     if os.path.exists(dir):
         print(f"directory '{dir}' already exists.\n")
     else:
@@ -11,6 +19,15 @@ def check_dir_exists(dir: str):
 
 
 class S3:
+    """S3 project bucket relevant paths.
+
+    Attributes:
+        Bucket (str): project bucket.
+        Exports (dict[str]): exports objects.
+        Local_Commerce (dict[str]): local commerce objects.
+        Korea_Imports (dict[str]): korea imports objects.
+    """
+
     Bucket = "talento-tech-project"
     Exports = {
         "raw": "exports/raw/",
@@ -30,6 +47,15 @@ class S3:
 
 
 class Local_Dir:
+    """Local project directory relevant paths.
+
+    Attributes:
+        Data (str): root data folder.
+        Exports (dict[str]): exports data folder.
+        Local_Commerce (dict[str]): local commerce data folder.
+        Korea_Imports (dict[str]): korea imports data folder.
+    """
+
     Data = "./data/"
 
     Exports = {
@@ -52,6 +78,14 @@ class Local_Dir:
 
 
 class Filename:
+    """Filename for processed data.
+
+    Attributes:
+        Exports (dict[str]): exports processed data.
+        Local_Commerce (dict[str]): local commerce processed data.
+        Korea_Imports (dict[str]): korea imports processed data.
+    """
+
     Exports = {"clean": "clean_exports.parquet"}
 
     Local_Commerce = {"clean": "clean_localcommerce.parquet"}
@@ -60,6 +94,13 @@ class Filename:
 
 
 class Exports:
+    """Exports relevant arguments.
+
+    Attributes:
+        Columns_To_Drop (list[str]): columns from raw data to drop.
+        Dtypes (list[tuple]): column-dtype pairs to cast clean data.
+    """
+
     Columns_To_Drop = [
         "PAIS",
         "COD_SAL1",
@@ -95,12 +136,26 @@ class Exports:
 
 
 class Local_Commerce:
+    """Local commerce relevant arguments.
+
+    Attributes:
+        Columns_To_Drop (list[str]): columns from raw data to drop.
+        Dtypes (list[tuple]): column-dtype pairs to cast clean data.
+    """
+
     Columns_To_Drop = ["V1", "Personal"]
 
     Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.string())]
 
 
 class Korea_Imports:
+    """Korea imports relevant arguments.
+
+    Attributes:
+        Columns_To_Drop (list[str]): columns from raw data to drop.
+        Dtypes (list[tuple]): column-dtype pairs to cast clean data.
+    """
+
     Columns_To_Drop = [
         "typeCode",
         "freqCode",
@@ -155,7 +210,7 @@ class Korea_Imports:
     ]
 
 
-datasets = {
+datasets: dict[str, dict[str, typing.Any]] = {
     "exports": {
         "s3-raw": S3.Exports["raw"],
         "local-raw": Local_Dir.Exports["raw"],
@@ -184,3 +239,4 @@ datasets = {
         "dtypes": Korea_Imports.Dtypes,
     },
 }
+"""dict[str, dict[str, Any]]: collection of relevant info about exports, local commerce and korea imports."""
