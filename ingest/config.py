@@ -15,17 +15,17 @@ class S3:
     Exports = {
         "raw": "exports/raw/",
         "clean": "exports/clean/",
-        "transformed": "exports/transformed/"
+        "transformed": "exports/transformed/",
     }
     Local_Commerce = {
         "raw": "local-commerce/raw/",
         "clean": "local-commerce/clean/",
-        "transformed": "local-commerce/transformed/"
+        "transformed": "local-commerce/transformed/",
     }
     Korea_Imports = {
         "raw": "korea-imports/raw/",
         "clean": "korea-imports/clean/",
-        "transformed": "korea-imports/transformed/"
+        "transformed": "korea-imports/transformed/",
     }
 
 
@@ -33,35 +33,31 @@ class Local_Dir:
     Data = "./data/"
 
     Exports = {
-        "raw": Data + S3.Exports['raw'],
-        "clean": Data + S3.Exports['clean'],
-        "transformed": Data + S3.Exports['transformed']
+        "raw": Data + S3.Exports["raw"],
+        "clean": Data + S3.Exports["clean"],
+        "transformed": Data + S3.Exports["transformed"],
     }
 
     Local_Commerce = {
         "raw": Data + S3.Local_Commerce["raw"],
         "clean": Data + S3.Local_Commerce["clean"],
-        "transformed": Data + S3.Local_Commerce["transformed"]
+        "transformed": Data + S3.Local_Commerce["transformed"],
     }
 
     Korea_Imports = {
         "raw": Data + S3.Korea_Imports["raw"],
         "clean": Data + S3.Korea_Imports["clean"],
-        "transformed": Data + S3.Korea_Imports["transformed"]
+        "transformed": Data + S3.Korea_Imports["transformed"],
     }
+
 
 class Filename:
-    Exports = {
-        "clean": "clean_exports.parquet"
-    }
+    Exports = {"clean": "clean_exports.parquet"}
 
-    Local_Commerce = {
-        "clean": "clean_localcommerce.parquet"
-    }
+    Local_Commerce = {"clean": "clean_localcommerce.parquet"}
 
-    Korea_Imports = {
-        "clean": "clean_koreaimports.parquet"
-    }
+    Korea_Imports = {"clean": "clean_koreaimports.parquet"}
+
 
 class Exports:
     Columns_To_Drop = [
@@ -97,17 +93,12 @@ class Exports:
         ("OTROSG", pa.string()),
     ]
 
-class Local_Commerce:
-    Columns_To_Drop = [
-        "V1",
-        "Personal"
-    ]
 
-    Dtypes = [
-        ("DEPTO", pa.uint8()),
-        ("CORRELA_9", pa.string()),
-        ("VENTA", pa.string())
-    ]
+class Local_Commerce:
+    Columns_To_Drop = ["V1", "Personal"]
+
+    Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.string())]
+
 
 class Korea_Imports:
     Columns_To_Drop = [
@@ -153,15 +144,16 @@ class Korea_Imports:
         "fobvalue",
         "legacyEstimationFlag",
         "isReported",
-        "isAggregate"
+        "isAggregate",
     ]
 
     Dtypes = [
         ("partnerDesc", pa.string()),
         ("cmdCode", pa.uint16()),
         ("cmdDesc", pa.string()),
-        ("primaryValue", pa.float64())
+        ("primaryValue", pa.float64()),
     ]
+
 
 datasets = {
     "exports": {
@@ -171,7 +163,7 @@ datasets = {
         "local-clean": Local_Dir.Exports["clean"],
         "filename-clean": Filename.Exports["clean"],
         "drop-cols": Exports.Columns_To_Drop,
-        "dtypes": Exports.Dtypes
+        "dtypes": Exports.Dtypes,
     },
     "local-commerce": {
         "s3-raw": S3.Local_Commerce["raw"],
@@ -180,7 +172,7 @@ datasets = {
         "local-clean": Local_Dir.Local_Commerce["clean"],
         "filename-clean": Filename.Local_Commerce["clean"],
         "drop-cols": Local_Commerce.Columns_To_Drop,
-        "dtypes": Local_Commerce.Dtypes
+        "dtypes": Local_Commerce.Dtypes,
     },
     "korea-imports": {
         "s3-raw": S3.Korea_Imports["raw"],
@@ -189,6 +181,6 @@ datasets = {
         "local-clean": Local_Dir.Korea_Imports["clean"],
         "filename-clean": Filename.Korea_Imports["clean"],
         "drop-cols": Korea_Imports.Columns_To_Drop,
-        "dtypes": Korea_Imports.Dtypes
-    }
+        "dtypes": Korea_Imports.Dtypes,
+    },
 }

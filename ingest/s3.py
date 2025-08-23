@@ -5,61 +5,56 @@ import boto3
 from botocore.exceptions import ClientError
 
 
-def get_s3_resource():
-    """returns a s3 client"""
-
-    s3 = boto3.resource("s3")
-    return s3
-
-
 def get_s3_client():
     s3 = boto3.client("s3")
     return s3
 
 
-def get_objects(bucket: str, prefix: str, marker: str):
+def get_objects(bucket: str, prefix: str, start_after: str) -> list:
     """shows all objects within RAW_DATA_BUCKET"""
-    s3 = get_s3_resource()
-    bucket = s3.Bucket(config.S3.Bucket)
-    return bucket.objects.filter(Prefix=prefix, Marker=marker).all()
+    s3 = get_s3_client()
+    response = s3.list_objects_v2(Bucket=bucket, Prefix=prefix, StartAfter=start_after)
+    if response["KeyCount"] > 0:
+        return response["Contents"]
+    else:
+        return []
 
 
-def download_raw_data(bucket: str, prefix: str, marker: str):
+def download_raw_data(bucket: str, prefix: str, start_after: str):
     """downloads all objects from RAW_DATA_BUCKET"""
 
-    config.check_dir_exists(f"{config.Local_Dir.Data}/{marker}")
+    config.check_dir_exists(f"{config.Local_Dir.Data}/{start_after}")
 
-    if not os.listdir(f"{config.Local_Dir.Data}/{marker}"):
+    if not os.listdir(f"{config.Local_Dir.Data}/{start_after}"):
         s3 = get_s3_client()
-        response = get_objects(bucket, prefix, marker)
+        response = get_objects(bucket, prefix, start_after)
 
-        for obj in response:
-            print(obj.key)
+        if response:
+            for obj in response:
+                print(obj["Key"])
 
-        for obj in response:
-            s3.download_file(bucket, f"{obj.key}", f"{config.Local_Dir.Data}/{obj.key}")
+            for obj in response:
+                s3.download_file(
+                    bucket, f"{obj['Key']}", f"{config.Local_Dir.Data}/{obj['Key']}"
+                )
 
-        return True
+            return True
+        return False
     return False
 
 
-def upload_file(file_name, bucket, object_name=None):
+def upload_clean_data(filename, bucket, object_name):
     """Upload a file to an S3 bucket
 
     :param file_name: File to upload
     :param bucket: Bucket to upload to
-    :param object_name: S3 object name. If not specified then file_name is used
+    :param object_name: S3 object name
     :return: True if file was uploaded, else False
     """
 
-    # If S3 object_name was not specified, use file_name
-    if object_name is None:
-        object_name = os.path.basename(file_name)
-
-    # Upload the file
-    s3_client = boto3.client("s3")
+    s3 = boto3.client("s3")
     try:
-        s3_client.upload_file(file_name, bucket, object_name)
+        s3.upload_file(filename, bucket, object_name)
     except ClientError as e:
         logging.error(e)
         return False

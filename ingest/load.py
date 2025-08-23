@@ -7,7 +7,6 @@ import duckdb
 
 
 def unify_csv(source_dir: str) -> duckdb.DuckDBPyRelation:
-
     data = duckdb.read_csv(source_dir + "*.csv", ignore_errors=True)
     return data
 
@@ -46,9 +45,9 @@ class Load:
         self.data = self.data.drop_null()
         return self
 
-# Here I use dataframes because I need a row approach, instead of a columnar one
+    # Here I use dataframes because I need a row approach, instead of a columnar one
     def table_to_dataframe(self) -> pd.DataFrame:
-        self.data =  self.data.to_pandas(types_mapper=pd.ArrowDtype)
+        self.data = self.data.to_pandas(types_mapper=pd.ArrowDtype)
         return self
 
     def purge_duplicates(self) -> pd.DataFrame:
