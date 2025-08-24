@@ -63,9 +63,9 @@ class Load:
         """
         self.data = data
 
-    def get_pyarrow_table(self) -> pa.Table:
+    def get_pyarrow_table(self: duckdb.DuckDBPyRelation) -> pa.Table: #type: ignore
         """Creates a pyarrow table from a DuckDBPyRelation."""
-        self.data = self.data.arrow()
+        self.data = self.data.arrow() #type: ignore
         return self
 
     def show_info(self: pa.Table | pd.DataFrame) -> None:
@@ -93,16 +93,20 @@ class Load:
         self.data = self.data.drop_columns(columns)
         return self
 
-    def cast_dtypes(self: pa.Table, dtypes: list[tuple]) -> pa.Table:
+    def cast_dtypes(self: pa.Table | pd.DataFrame, dtypes: list[tuple]) -> pa.Table | pd.DataFrame:
         """Casts dtypes.
 
-        Instance must be a pyarrow table.
+        Instance must be a pyarrow table or pandas dataframe.
 
         Args:
             dtypes (list[tuple]): column-dtype pairs to cast.
         """
-        schema = pa.schema(dtypes)
-        self.data = self.data.cast(target_schema=schema)
+        if isinstance(self.data, pa.Table):
+            schema = pa.schema(dtypes)
+            self.data = self.data.cast(target_schema=schema)
+        else:
+            for column in dtypes:
+                self.data[column[0]] = self.data[column[0]].astype(dtype=pd.ArrowDtype(column[1]))
         return self
 
     def purge_nulls(self: pa.Table) -> pa.Table:
@@ -125,6 +129,23 @@ class Load:
         Instance must be pandas dataframe.
         """
         self.data = self.data.drop_duplicates()
+        return self
+
+    def fix_monetary_punctuation(self: pd.DataFrame, monetary_columns: list[str]) -> pd.DataFrame: # type: ignore
+        """Replace commas for dots in strings representing monetary values.
+        
+        Instance must be pandas dataframe.
+
+        Regex selects all commas and replace them with a empty string.
+        This avoids compatibility issues at the time of dtype casting.
+
+        Args:
+            monetary_column (str): column name to fix.
+        """
+        for column in monetary_columns:
+            if not isinstance(self.data[column], str):
+                self.data[column] = self.data[column].astype(dtype=pd.ArrowDtype(pa.string()))
+            self.data[column] = self.data[column].str.replace("[,.].", "", regex=True)
         return self
 
     def save_to_parquet(self: pd.DataFrame, dir: str, filename: str):  # type: ignore

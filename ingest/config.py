@@ -130,6 +130,15 @@ class Exports:
         "PNK",
     ]
 
+    Monetary_Cols = [
+        "FOBDOL",
+        "FOBPES",
+        "AGRENA",
+        "FLETES",
+        "SEGURO",
+        "OTROSG"
+    ]
+
     Dtypes = [
         ("FECH", pa.uint16()),
         ("ADUA", pa.uint8()),
@@ -141,12 +150,12 @@ class Exports:
         ("POSAR", pa.uint64()),
         ("DPTO1", pa.uint8()),
         ("CANTI", pa.string()),
-        ("FOBDOL", pa.string()),
-        ("FOBPES", pa.string()),
-        ("AGRENA", pa.string()),
-        ("FLETES", pa.string()),
-        ("SEGURO", pa.string()),
-        ("OTROSG", pa.string()),
+        ("FOBDOL", pa.float64()),
+        ("FOBPES", pa.float64()),
+        ("AGRENA", pa.float64()),
+        ("FLETES", pa.float64()),
+        ("SEGURO", pa.float64()),
+        ("OTROSG", pa.float64()),
     ]
 
 
@@ -160,7 +169,11 @@ class Local_Commerce:
 
     Columns_To_Drop = ["V1", "Personal"]
 
-    Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.string())]
+    Monetary_Cols = [
+        "VENTA"
+    ]
+
+    Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.float64())]
 
 
 class Korea_Imports:
@@ -217,6 +230,10 @@ class Korea_Imports:
         "isAggregate",
     ]
 
+    Monetary_Cols = [
+        "primaryValue"
+    ]
+
     Dtypes = [
         ("partnerDesc", pa.string()),
         ("cmdCode", pa.uint16()),
@@ -234,6 +251,7 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Exports["clean"],
         "drop-cols": Exports.Columns_To_Drop,
         "dtypes": Exports.Dtypes,
+        "monetary-cols": Exports.Monetary_Cols
     },
     "local-commerce": {
         "s3-raw": S3.Local_Commerce["raw"],
@@ -243,6 +261,7 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Local_Commerce["clean"],
         "drop-cols": Local_Commerce.Columns_To_Drop,
         "dtypes": Local_Commerce.Dtypes,
+        "monetary-cols": Local_Commerce.Monetary_Cols
     },
     "korea-imports": {
         "s3-raw": S3.Korea_Imports["raw"],
@@ -252,6 +271,7 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Korea_Imports["clean"],
         "drop-cols": Korea_Imports.Columns_To_Drop,
         "dtypes": Korea_Imports.Dtypes,
+        "monetary-cols": Korea_Imports.Monetary_Cols
     },
 }
 """dict[str, dict[str, Any]]: collection of relevant info about exports, local commerce and korea imports."""

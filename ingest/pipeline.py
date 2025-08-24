@@ -28,10 +28,11 @@ def main(arg: str):
                 data = Load(data)
 
                 data = (
-                    data.get_pyarrow_table()
+                    data.get_pyarrow_table() #type: ignore
                     .purge_columns(columns=config.datasets[key]["drop-cols"])
-                    .cast_dtypes(dtypes=config.datasets[key]["dtypes"])
                     .table_to_dataframe()
+                    .fix_monetary_punctuation(config.datasets[key]["monetary-cols"])
+                    .cast_dtypes(dtypes=config.datasets[key]["dtypes"])
                     .purge_duplicates()
                 )
 
@@ -79,4 +80,4 @@ def main(arg: str):
 
 
 if __name__ == "__main__":
-    main(arg="load")
+    main(arg="all")
