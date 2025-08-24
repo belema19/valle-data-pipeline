@@ -5,6 +5,5 @@
         "source=${localEnv:HOME}/.aws,target=/root/.aws,type=bind"
     ],
     "service": "devcontainer",
-    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
-    "remoteUser": "vscode"
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}"
 }
