@@ -148,6 +148,31 @@ class Load:
             self.data[column] = self.data[column].str.replace("[,.].", "", regex=True)
         return self
 
+    def format_commoditie_code(
+        self: pd.DataFrame, #type: ignore
+        commoditie_col: str,
+        pad_: bool = False,
+        slice_: bool = False,
+        *,
+        width: int = 1,
+        side: str = "left",
+        fillchar: str = "",
+        stop: int = 1
+    ) -> pd.DataFrame:
+
+        if not isinstance(self.data[commoditie_col], str):
+            self.data[commoditie_col] = self.data[commoditie_col].astype(dtype=pd.ArrowDtype(pa.string()))
+
+        self.data[commoditie_col] = self.data[commoditie_col].str.strip()
+
+        if pad_:
+            self.data[commoditie_col] = self.data[commoditie_col].str.pad(width=width, side=side, fillchar=fillchar)
+
+        if slice_:
+            self.data[commoditie_col] = self.data[commoditie_col].str.slice(stop=stop)
+
+        return self
+
     def save_to_parquet(self: pd.DataFrame, dir: str, filename: str):  # type: ignore
         """save data to parquet file.
 

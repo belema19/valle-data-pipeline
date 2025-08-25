@@ -32,6 +32,15 @@ def main(arg: str):
                     .purge_columns(columns=config.datasets[key]["drop-cols"])
                     .table_to_dataframe()
                     .fix_monetary_punctuation(config.datasets[key]["monetary-cols"])
+                    .format_commoditie_code(
+                        commoditie_col=config.datasets[key]["commoditie-col-format"]["commoditie-col"],
+                        pad_=config.datasets[key]["commoditie-col-format"]["pad"],
+                        slice_=config.datasets[key]["commoditie-col-format"]["slice"],
+                        width=config.datasets[key]["commoditie-col-format"]["width"],
+                        side=config.datasets[key]["commoditie-col-format"]["side"],
+                        fillchar=config.datasets[key]["commoditie-col-format"]["fillchar"],
+                        stop=config.datasets[key]["commoditie-col-format"]["stop"]
+                    )
                     .cast_dtypes(dtypes=config.datasets[key]["dtypes"])
                     .purge_duplicates()
                 )

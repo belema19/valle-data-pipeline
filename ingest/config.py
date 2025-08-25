@@ -117,8 +117,18 @@ class Exports:
     """
 
     Columns_To_Drop = [
+        "FECH",
+        "ADUA",
+        "COD_SAL",
+        "VIA",
+        "CANTI",
+        "FOBDOL",
+        "FLETES",
+        "SEGURO",
+        "OTROSG",
         "PAIS",
         "COD_SAL1",
+        "DPTO2",
         "BANDERA",
         "REGIM",
         "FINALID",
@@ -131,32 +141,27 @@ class Exports:
     ]
 
     Monetary_Cols = [
-        "FOBDOL",
         "FOBPES",
         "AGRENA",
-        "FLETES",
-        "SEGURO",
-        "OTROSG"
     ]
 
     Dtypes = [
-        ("FECH", pa.uint16()),
-        ("ADUA", pa.uint8()),
         ("COD_PAI4", pa.string()),
-        ("COD_SAL", pa.string()),
-        ("DPTO2", pa.uint8()),
-        ("VIA", pa.uint8()),
-        ("MODAD", pa.uint16()),
-        ("POSAR", pa.uint64()),
+        ("POSAR", pa.uint8()),
         ("DPTO1", pa.uint8()),
-        ("CANTI", pa.string()),
-        ("FOBDOL", pa.float64()),
         ("FOBPES", pa.float64()),
         ("AGRENA", pa.float64()),
-        ("FLETES", pa.float64()),
-        ("SEGURO", pa.float64()),
-        ("OTROSG", pa.float64()),
     ]
+
+    Commoditie_Code_Format = {
+        "commoditie-col": "POSAR",
+        "pad": True,
+        "slice": True,
+        "width": 10,
+        "side": "left",
+        "fillchar": "0",
+        "stop": 2
+    }
 
 
 class Local_Commerce:
@@ -174,6 +179,16 @@ class Local_Commerce:
     ]
 
     Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.float64())]
+
+    Commoditie_Code_Format = {
+        "commoditie-col": "CORRELA_9",
+        "pad": False,
+        "slice": False,
+        "width": 1,
+        "side": "left",
+        "fillchar": "0",
+        "stop": 1
+    }
 
 
 class Korea_Imports:
@@ -204,6 +219,7 @@ class Korea_Imports:
         "classificationCode",
         "classificationSearchCode",
         "isOriginalClassification",
+        "cmdDesc",
         "aggrLevel",
         "isLeaf",
         "customsCode",
@@ -236,10 +252,19 @@ class Korea_Imports:
 
     Dtypes = [
         ("partnerDesc", pa.string()),
-        ("cmdCode", pa.uint16()),
-        ("cmdDesc", pa.string()),
+        ("cmdCode", pa.uint8()),
         ("primaryValue", pa.float64()),
     ]
+
+    Commoditie_Code_Format = {
+        "commoditie-col": "cmdCode",
+        "pad": True,
+        "slice": True,
+        "width": 4,
+        "side": "left",
+        "fillchar": "0",
+        "stop": 2
+    }
 
 
 datasets: dict[str, dict[str, typing.Any]] = {
@@ -251,7 +276,8 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Exports["clean"],
         "drop-cols": Exports.Columns_To_Drop,
         "dtypes": Exports.Dtypes,
-        "monetary-cols": Exports.Monetary_Cols
+        "monetary-cols": Exports.Monetary_Cols,
+        "commoditie-col-format": Exports.Commoditie_Code_Format
     },
     "local-commerce": {
         "s3-raw": S3.Local_Commerce["raw"],
@@ -261,7 +287,8 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Local_Commerce["clean"],
         "drop-cols": Local_Commerce.Columns_To_Drop,
         "dtypes": Local_Commerce.Dtypes,
-        "monetary-cols": Local_Commerce.Monetary_Cols
+        "monetary-cols": Local_Commerce.Monetary_Cols,
+        "commoditie-col-format": Local_Commerce.Commoditie_Code_Format
     },
     "korea-imports": {
         "s3-raw": S3.Korea_Imports["raw"],
@@ -271,7 +298,8 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "filename-clean": Filename.Korea_Imports["clean"],
         "drop-cols": Korea_Imports.Columns_To_Drop,
         "dtypes": Korea_Imports.Dtypes,
-        "monetary-cols": Korea_Imports.Monetary_Cols
+        "monetary-cols": Korea_Imports.Monetary_Cols,
+        "commoditie-col-format": Korea_Imports.Commoditie_Code_Format
     },
 }
 """dict[str, dict[str, Any]]: collection of relevant info about exports, local commerce and korea imports."""
