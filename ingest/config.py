@@ -32,6 +32,9 @@ def check_dir_exists(dir: str):
         os.makedirs(dir)
         print(f"directory '{dir}' created.\n")
 
+class Database:
+    dir = "/workspaces/talento_tech/data/transformed/"
+    filename = "db.duckdb"
 
 class S3:
     """S3 project bucket relevant paths.
