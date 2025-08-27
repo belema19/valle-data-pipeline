@@ -32,9 +32,11 @@ def check_dir_exists(dir: str):
         os.makedirs(dir)
         print(f"directory '{dir}' created.\n")
 
+
 class Database:
     dir = "/workspaces/talento_tech/data/transformed/"
     filename = "db.duckdb"
+
 
 class S3:
     """S3 project bucket relevant paths.
@@ -50,17 +52,10 @@ class S3:
     Exports = {
         "raw": "exports/raw/",
         "clean": "exports/clean/",
-        "transformed": "exports/transformed/",
-    }
-    Local_Commerce = {
-        "raw": "local-commerce/raw/",
-        "clean": "local-commerce/clean/",
-        "transformed": "local-commerce/transformed/",
     }
     Korea_Imports = {
         "raw": "korea-imports/raw/",
         "clean": "korea-imports/clean/",
-        "transformed": "korea-imports/transformed/",
     }
 
 
@@ -79,19 +74,11 @@ class Local_Dir:
     Exports = {
         "raw": Data + S3.Exports["raw"],
         "clean": Data + S3.Exports["clean"],
-        "transformed": Data + S3.Exports["transformed"],
-    }
-
-    Local_Commerce = {
-        "raw": Data + S3.Local_Commerce["raw"],
-        "clean": Data + S3.Local_Commerce["clean"],
-        "transformed": Data + S3.Local_Commerce["transformed"],
     }
 
     Korea_Imports = {
         "raw": Data + S3.Korea_Imports["raw"],
         "clean": Data + S3.Korea_Imports["clean"],
-        "transformed": Data + S3.Korea_Imports["transformed"],
     }
 
 
@@ -105,8 +92,6 @@ class Filename:
     """
 
     Exports = {"clean": "clean_exports.parquet"}
-
-    Local_Commerce = {"clean": "clean_localcommerce.parquet"}
 
     Korea_Imports = {"clean": "clean_koreaimports.parquet"}
 
@@ -163,34 +148,7 @@ class Exports:
         "width": 10,
         "side": "left",
         "fillchar": "0",
-        "stop": 2
-    }
-
-
-class Local_Commerce:
-    """Local commerce relevant arguments.
-
-    Attributes:
-        Columns_To_Drop (list[str]): columns from raw data to drop.
-        Dtypes (list[tuple]): column-dtype pairs to cast clean data.
-    """
-
-    Columns_To_Drop = ["V1", "Personal"]
-
-    Monetary_Cols = [
-        "VENTA"
-    ]
-
-    Dtypes = [("DEPTO", pa.uint8()), ("CORRELA_9", pa.string()), ("VENTA", pa.float64())]
-
-    Commoditie_Code_Format = {
-        "commoditie-col": "CORRELA_9",
-        "pad": False,
-        "slice": False,
-        "width": 1,
-        "side": "left",
-        "fillchar": "0",
-        "stop": 1
+        "stop": 2,
     }
 
 
@@ -249,9 +207,7 @@ class Korea_Imports:
         "isAggregate",
     ]
 
-    Monetary_Cols = [
-        "primaryValue"
-    ]
+    Monetary_Cols = ["primaryValue"]
 
     Dtypes = [
         ("partnerDesc", pa.string()),
@@ -266,7 +222,7 @@ class Korea_Imports:
         "width": 4,
         "side": "left",
         "fillchar": "0",
-        "stop": 2
+        "stop": 2,
     }
 
 
@@ -280,18 +236,7 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "drop-cols": Exports.Columns_To_Drop,
         "dtypes": Exports.Dtypes,
         "monetary-cols": Exports.Monetary_Cols,
-        "commoditie-col-format": Exports.Commoditie_Code_Format
-    },
-    "local-commerce": {
-        "s3-raw": S3.Local_Commerce["raw"],
-        "local-raw": Local_Dir.Local_Commerce["raw"],
-        "s3-clean": S3.Local_Commerce["clean"],
-        "local-clean": Local_Dir.Local_Commerce["clean"],
-        "filename-clean": Filename.Local_Commerce["clean"],
-        "drop-cols": Local_Commerce.Columns_To_Drop,
-        "dtypes": Local_Commerce.Dtypes,
-        "monetary-cols": Local_Commerce.Monetary_Cols,
-        "commoditie-col-format": Local_Commerce.Commoditie_Code_Format
+        "commoditie-col-format": Exports.Commoditie_Code_Format,
     },
     "korea-imports": {
         "s3-raw": S3.Korea_Imports["raw"],
@@ -302,7 +247,7 @@ datasets: dict[str, dict[str, typing.Any]] = {
         "drop-cols": Korea_Imports.Columns_To_Drop,
         "dtypes": Korea_Imports.Dtypes,
         "monetary-cols": Korea_Imports.Monetary_Cols,
-        "commoditie-col-format": Korea_Imports.Commoditie_Code_Format
+        "commoditie-col-format": Korea_Imports.Commoditie_Code_Format,
     },
 }
 """dict[str, dict[str, Any]]: collection of relevant info about exports, local commerce and korea imports."""
