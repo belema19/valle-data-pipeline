@@ -1,8 +1,8 @@
 pypi-ingest:
 	uv run ./ingest/pipeline.py
 
-pypi-analize:
-	uv run ./analize/pipeline.py
+pypi-transform:
+	uv run ./transform/pipeline.py
 
 reset-data:
 	rm -r ./data

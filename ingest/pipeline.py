@@ -17,7 +17,7 @@ def main(arg: str):
     if arg == "clean" or arg == "all":
         try:
             for key in config.datasets.keys():
-                s3.download_raw_data(
+                s3.download_object(
                     bucket=BUCKET,
                     prefix=config.datasets[key]["s3-raw"],
                     start_after=config.datasets[key]["s3-raw"],
@@ -72,7 +72,7 @@ def main(arg: str):
                     bucket=BUCKET, prefix=s3_dir, start_after=s3_dir
                 ) and os.listdir(local_dir):
                     for filename in os.listdir(local_dir):
-                        s3.upload_clean_data(
+                        s3.upload_object(
                             bucket=BUCKET,
                             filename=local_dir + filename,
                             object_name=f"{s3_dir}{filename}",

@@ -51,9 +51,7 @@ def get_objects(bucket: str, prefix: str, start_after: str) -> list:
         return []
 
 
-def download_raw_data(
-    bucket: str, prefix: str, start_after: str, verbose: bool = False
-):
+def download_object(bucket: str, prefix: str, start_after: str, verbose: bool = False):
     """Downloads S3 objects from a given S3 path.
 
     Args:
@@ -86,7 +84,7 @@ def download_raw_data(
     return False
 
 
-def upload_clean_data(filename: str, bucket: str, object_name: str):
+def upload_object(filename: str, bucket: str, object_name: str):
     """Upload a file to an S3 given path.
 
     Args:
@@ -99,9 +97,11 @@ def upload_clean_data(filename: str, bucket: str, object_name: str):
     """
 
     s3 = boto3.client("s3")
+    print("Uploading data...\n")
     try:
         s3.upload_file(filename, bucket, object_name)
     except ClientError as e:
         logging.error(e)
         return False
+    print("Data uploaded successfully!\n")
     return True
