@@ -1,8 +1,5 @@
-# TODO:
-# upload db.duckdb to S3
-# graphic some heatmaps or bivariate distribution (hscode, value)
-# create machine learning model
 import os, sys
+import duckdb
 
 sys.path.append("/workspaces/talento_tech/ingest/")
 import config, s3  # type: ignore
@@ -13,11 +10,15 @@ def main():
     db_filename = config.Database.filename
     db_path = os.path.join(db_dir, db_filename)
 
-    if not os.path.exists(db_path):
-        os.makedirs(db_dir, exist_ok=True)
+    ddb = duckdb.connect(database=db_path)
 
-    s3.upload_object(db_path, config.S3.Bucket, db_filename)
+    ddb.execute(
+        """EXPORT DATABASE '/workspaces/talento_tech/data/transformed/parquet/' (FORMAT parquet);"""
+    )
 
+    for file in os.listdir(db_dir + "parquet/"):
+        print(file)
+        s3.upload_object(db_dir + "parquet/" + file, config.S3.Bucket, "database/" + file)
 
 if __name__ == "__main__":
     main()
