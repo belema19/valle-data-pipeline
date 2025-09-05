@@ -4,6 +4,9 @@ pypi-ingest:
 pypi-transform:
 	uv run ./transform/pipeline.py
 
+pypi-visualize:
+	uv run streamlit run ./visualize/main.py
+
 reset-data:
 	rm -r ./data
 
