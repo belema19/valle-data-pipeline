@@ -4,7 +4,7 @@ import streamlit as st
 import duckdb
 import pandas as pd
 
-sys.path.append("/workspaces/talento_tech/ingest/")
+sys.path.append("./ingest/")
 import config  # type: ignore
 
 
