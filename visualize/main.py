@@ -9,7 +9,7 @@ import config  # type: ignore
 
 
 def main():
-    ddb = duckdb.connect(os.path.join(config.Database.dir, config.Database.filename))
+    ddb = duckdb.connect("./data/transformed/db.duckdb")
 
     # Valle del Cauca datasets
     valle_exports = ddb.sql(
@@ -325,7 +325,7 @@ def main():
 
     st.markdown("## Explora los Datos")
 
-    ddb = duckdb.connect(os.path.join(config.Database.dir, config.Database.filename))
+    ddb = duckdb.connect("./data/transformed/db.duckdb")
 
     tab5, tab6 = st.tabs(["Valle del Cauca", "Corea del Sur"])
 
