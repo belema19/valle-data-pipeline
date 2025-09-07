@@ -1,11 +1,15 @@
+import sys
+import os
 import streamlit as st
 import duckdb
 import pandas as pd
-import altair as alt
+
+sys.path.append("/workspaces/talento_tech/ingest/")
+import config  # type: ignore
+
 
 def main():
-
-    ddb = duckdb.connect("/workspaces/talento_tech/data/transformed/db.duckdb")
+    ddb = duckdb.connect(os.path.join(config.Database.dir, config.Database.filename))
 
     # Valle del Cauca datasets
     valle_exports = ddb.sql(
@@ -36,7 +40,6 @@ def main():
     ).df()
 
     # Korea datasets
-
     korea_imports = ddb.sql(
         """SELECT *
         FROM korea_imports;"""
@@ -71,11 +74,9 @@ def main():
     ).df()
 
     # Close connection
-
     ddb.close()
 
     # Page Content
-
     st.markdown("# OPORTUNIDADES DE EXPORTACIÓN PARA EL VALLE DEL CAUCA")
 
     bar1, bar2 = st.columns(2)
@@ -111,9 +112,17 @@ def main():
         """
     )
 
-    bar1.bar_chart(top_valle_exports, x="POSAR", y="TOTAL_FOBPES", x_label="HS Code", y_label="COP")
+    bar1.bar_chart(
+        top_valle_exports, x="POSAR", y="TOTAL_FOBPES", x_label="HS Code", y_label="COP"
+    )
 
-    bar2.bar_chart(top_valle_exports_to_korea, x="POSAR", y="TOTAL_FOBPES", x_label="HS Code", y_label="")
+    bar2.bar_chart(
+        top_valle_exports_to_korea,
+        x="POSAR",
+        y="TOTAL_FOBPES",
+        x_label="HS Code",
+        y_label="",
+    )
 
     st.markdown(
         """
@@ -145,7 +154,7 @@ def main():
         y="FOBPES",
         color="kmeans",
         x_label="HS Code",
-        y_label="COP"
+        y_label="COP",
     )
 
     tab2.markdown(
@@ -162,7 +171,7 @@ def main():
         y="FOBPES",
         color="kmeans",
         x_label="HS Code",
-        y_label="COP"
+        y_label="COP",
     )
 
     st.markdown(
@@ -190,7 +199,9 @@ def main():
         - Químicos orgánicos (29).
         - Plásticos y artículos de plástico (39)."""
     )
-    bar3.bar_chart(top_korea_imports, x="cmdCode", y="totalValue", x_label="HS Code", y_label="USD")
+    bar3.bar_chart(
+        top_korea_imports, x="cmdCode", y="totalValue", x_label="HS Code", y_label="USD"
+    )
 
     bar4.markdown(
         """
@@ -209,7 +220,13 @@ def main():
         - Maquinaria y equípo eléctrico y sus partes (85).
         - Carne y despojos comestibles (02)."""
     )
-    bar4.bar_chart(top_korea_iberoamerica_imports, x="cmdCode", y="totalValue", x_label="HS Code", y_label="")
+    bar4.bar_chart(
+        top_korea_iberoamerica_imports,
+        x="cmdCode",
+        y="totalValue",
+        x_label="HS Code",
+        y_label="",
+    )
 
     st.markdown(
         """
@@ -228,7 +245,13 @@ def main():
         - Frutas y nueces comestibles (08).
         - Aluminio y artículos de aluminio (76)."""
     )
-    st.bar_chart(top_korea_colombia_imports, x="cmdCode", y="totalValue", x_label="HS Code", y_label="USD")
+    st.bar_chart(
+        top_korea_colombia_imports,
+        x="cmdCode",
+        y="totalValue",
+        x_label="HS Code",
+        y_label="USD",
+    )
 
     st.markdown(
         """
@@ -263,7 +286,7 @@ def main():
         y="primaryValue",
         color="kmeans",
         x_label="HS Code",
-        y_label="USD"
+        y_label="USD",
     )
 
     tab4.markdown(
@@ -277,7 +300,7 @@ def main():
         y="primaryValue",
         color="kmeans",
         x_label="HS Code",
-        y_label="USD"
+        y_label="USD",
     )
 
     st.markdown(
@@ -302,8 +325,8 @@ def main():
 
     st.markdown("## Explora los Datos")
 
-    ddb = duckdb.connect("/workspaces/talento_tech/data/transformed/db.duckdb")
-    
+    ddb = duckdb.connect(os.path.join(config.Database.dir, config.Database.filename))
+
     tab5, tab6 = st.tabs(["Valle del Cauca", "Corea del Sur"])
 
     expander = tab5.expander("Filtro")

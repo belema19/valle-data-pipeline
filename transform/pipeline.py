@@ -6,19 +6,12 @@ import config, s3  # type: ignore
 
 
 def main():
-    db_dir = config.Database.dir
-    db_filename = config.Database.filename
-    db_path = os.path.join(db_dir, db_filename)
-
-    ddb = duckdb.connect(database=db_path)
-
-    ddb.execute(
-        """EXPORT DATABASE '/workspaces/talento_tech/data/transformed/parquet/' (FORMAT parquet);"""
+    s3.upload_object(
+        os.path.join(config.Database.dir, config.Database.filename),
+        config.S3.Bucket,
+        config.Database.filename,
     )
 
-    for file in os.listdir(db_dir + "parquet/"):
-        print(file)
-        s3.upload_object(db_dir + "parquet/" + file, config.S3.Bucket, "database/" + file)
 
 if __name__ == "__main__":
     main()
